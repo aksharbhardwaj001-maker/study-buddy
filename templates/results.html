@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results — Study Buddy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Study Buddy</p>
+    <h1>Nice work. Here's how it <span class="highlight-mark">landed.</span></h1>
+
+    <div class="card">
+      <div class="score-hero">
+        <div class="big">{{ correct_count }}<span class="of"> / {{ total_count }}</span></div>
+        <p>correct ({{ score_percent }}%)</p>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat">
+          <div class="stat-label">Video progress</div>
+          <div class="stat-value">{{ completion_percent }}%</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Watched</div>
+          <div class="stat-value">{{ watched_fmt }} / {{ total_fmt }}</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Avg. score</div>
+          <div class="stat-value">{{ avg_score }}%</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Question by question</h2>
+      {% for question, user_answer, g in rows %}
+      <div class="result-row">
+        <span class="tag {{ 'correct' if g.correct else 'incorrect' }}">{{ 'Correct' if g.correct else 'Incorrect' }}</span>
+        <p><strong>Q{{ loop.index }}: {{ question.question }}</strong></p>
+        <p class="your-answer">Your answer: {{ user_answer if user_answer else '(no answer given)' }}</p>
+        <p class="correct-answer">Correct answer: {{ question.answer }}</p>
+        <p class="feedback">{{ g.feedback }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <a href="{{ url_for('index') }}"><button type="button">Study another segment</button></a>
+    </div>
+  </div>
+</body>
+</html>

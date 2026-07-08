@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recap & Quiz — Study Buddy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Study Buddy</p>
+
+    <div class="timeline">
+      <div class="timeline-track">
+        <div class="timeline-fill" style="width: {{ new_percent }}%;"></div>
+      </div>
+      <div class="timeline-labels">
+        <span class="now">{{ new_percent }}% completed</span>
+        <span>+{{ gained_fmt }} logged today</span>
+      </div>
+    </div>
+
+    <h1>Here's what you <span class="highlight-mark">just covered.</span></h1>
+
+    <div class="card">
+      <h2>Recap</h2>
+      <p class="recap-text">{{ recap }}</p>
+    </div>
+
+    <div class="card">
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+      <h2>Quick quiz</h2>
+      <form action="{{ url_for('grade') }}" method="post">
+        {% for q in questions %}
+        <div class="question-block">
+          <span class="qnum">Q{{ loop.index }}</span>
+          <label for="answer_{{ loop.index0 }}">{{ q.question }}</label>
+          <input type="text" id="answer_{{ loop.index0 }}" name="answer_{{ loop.index0 }}" placeholder="Your answer">
+        </div>
+        {% endfor %}
+        <button type="submit">Submit answers</button>
+      </form>
+    </div>
+  </div>
+</body>
+</html>

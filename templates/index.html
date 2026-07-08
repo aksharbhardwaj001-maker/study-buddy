@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study Buddy — turn any video into a quiz</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Study Buddy</p>
+    <h1>Watch a bit.<br>Get quizzed on <span class="highlight-mark">exactly that bit.</span></h1>
+
+    <div class="card">
+      {% if error %}
+        <div class="error">{{ error }}</div>
+      {% endif %}
+      <form action="{{ url_for('fetch') }}" method="post">
+        <label for="url">YouTube link</label>
+        <input type="url" id="url" name="url" placeholder="https://www.youtube.com/watch?v=..." value="{{ prefill or '' }}" required autofocus>
+        <p class="hint">Needs captions/subtitles turned on for the video — auto-generated ones work fine.</p>
+        <button type="submit">Continue</button>
+      </form>
+    </div>
+
+    <p class="footer-note">Next: tell it how far you've watched today, and it'll recap and quiz just that part.</p>
+  </div>
+</body>
+</html>

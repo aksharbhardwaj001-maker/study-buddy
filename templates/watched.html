@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How far did you get? — Study Buddy</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <p class="eyebrow">Study Buddy</p>
+
+    <div class="timeline">
+      <div class="timeline-track">
+        <div class="timeline-fill" style="width: {{ percent }}%;"></div>
+      </div>
+      <div class="timeline-labels">
+        <span class="now">{{ old_checkpoint_fmt }} watched</span>
+        <span>{{ total_seconds_fmt }} total ({{ percent }}%)</span>
+      </div>
+    </div>
+
+    <h1>Where did you <span class="highlight-mark">leave off</span> today?</h1>
+
+    {% if error %}
+      <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <div class="card">
+      <h2>Time it live</h2>
+      <p>Start the timer, go watch, then come back and stop it — no need to check the clock yourself.</p>
+      <form id="live-form" action="{{ url_for('generate') }}" method="post">
+        <input type="hidden" id="live_elapsed" name="live_elapsed" value="">
+        <div id="timer-display" class="timer-display" hidden>00:00</div>
+        <button type="button" id="start-btn">Start watching</button>
+        <button type="button" id="done-btn" hidden>I'm done — analyze it</button>
+      </form>
+    </div>
+
+    <div class="divider"><span>or</span></div>
+
+    <div class="card">
+      <h2>Type it in</h2>
+      <form action="{{ url_for('generate') }}" method="post">
+        <label for="watched">Timestamp reached, or minutes watched today</label>
+        <input type="text" id="watched" name="watched" placeholder="e.g. 12:30  or  8">
+        <p class="hint">A timestamp like <strong>12:30</strong> means "I've reached that point in the video." A plain number like <strong>8</strong> means "I watched 8 more minutes since last time."</p>
+        <button type="submit">Get my recap + quiz</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const startBtn = document.getElementById('start-btn');
+      const doneBtn = document.getElementById('done-btn');
+      const display = document.getElementById('timer-display');
+      const hiddenField = document.getElementById('live_elapsed');
+      const form = document.getElementById('live-form');
+      let startTime = null;
+      let intervalId = null;
+
+      function formatElapsed(ms) {
+        const totalSec = Math.floor(ms / 1000);
+        const m = Math.floor(totalSec / 60);
+        const s = totalSec % 60;
+        return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      }
+
+      startBtn.addEventListener('click', function () {
+        startTime = Date.now();
+        startBtn.hidden = true;
+        display.hidden = false;
+        doneBtn.hidden = false;
+        intervalId = setInterval(function () {
+          display.textContent = formatElapsed(Date.now() - startTime);
+        }, 1000);
+      });
+
+      doneBtn.addEventListener('click', function () {
+        clearInterval(intervalId);
+        const elapsedSeconds = (Date.now() - startTime) / 1000;
+        hiddenField.value = elapsedSeconds;
+        doneBtn.disabled = true;
+        doneBtn.textContent = 'Analyzing…';
+        form.submit();
+      });
+    })();
+  </script>
+</body>
+</html>
