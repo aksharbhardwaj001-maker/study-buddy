@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import study_buddy as sb
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-me")
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-me-for-local-only")
 
 # Server-side store for data too big / sensitive for a cookie (transcript text, questions).
 # Keyed by a random id we stash in the (cookie) session. Fine for a single-user / small-scale app.

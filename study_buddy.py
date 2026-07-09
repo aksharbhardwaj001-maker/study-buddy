@@ -129,13 +129,30 @@ def fetch_transcript(video_id):
     try:
         transcript = YouTubeTranscriptApi.get_transcript(video_id)
     except AttributeError:
-        api = YouTubeTranscriptApi()
-        fetched = api.fetch(video_id)
-        transcript = [{"text": s.text, "start": s.start, "duration": s.duration} for s in fetched]
+        try:
+            api = YouTubeTranscriptApi()
+            fetched = api.fetch(video_id)
+            transcript = [{"text": s.text, "start": s.start, "duration": s.duration} for s in fetched]
+        except (TranscriptsDisabled, NoTranscriptFound):
+            raise RuntimeError("This video has no usable captions. Try a different video.")
+        except Exception as e:
+            raise RuntimeError(
+                f"Couldn't fetch the transcript for this video ({e}). "
+                "YouTube sometimes temporarily blocks transcript requests from an IP address — "
+                "try again in a few minutes, try a different network (e.g. a phone hotspot), "
+                "or try a different video."
+            )
     except TranscriptsDisabled:
         raise RuntimeError("This video has captions disabled, so I can't read it. Try a different video.")
     except NoTranscriptFound:
         raise RuntimeError("No transcript/captions found for this video. Try a different video.")
+    except Exception as e:
+        raise RuntimeError(
+            f"Couldn't fetch the transcript for this video ({e}). "
+            "YouTube sometimes temporarily blocks transcript requests from an IP address — "
+            "try again in a few minutes, try a different network (e.g. a phone hotspot), "
+            "or try a different video."
+        )
 
     if not transcript:
         raise RuntimeError("This video's transcript is empty. Try a different video.")
